@@ -4,6 +4,14 @@
 
 --------------------------------------------------------------------------
 
+1.25                                                        March 07, 2005
+
+  * Crypt::Random now uses a BEGIN block when exporting its
+    functions. There was a circular reference between
+    Crypt::Random and Crypt::Random::Generator, and depending on
+    the order the modules were used in, it lead to an 'Undefined
+    subroutine' error. Patch by ceeshek@cpan.org.
+
 1.24                                                        March 07, 2005   
 
   * Removed int() from one of the computations to make

@@ -11,15 +11,19 @@
 package Crypt::Random; 
 require Exporter;
 use vars qw($VERSION @EXPORT_OK); 
+
+BEGIN {
+    *import = \&Exporter::import;
+    @EXPORT_OK = qw( makerandom makerandom_itv makerandom_octet );
+}
+
 use Math::Pari qw(PARI floor Mod pari2pv pari2num lift); 
 use Carp; 
 use Data::Dumper;
 use Class::Loader;
 use Crypt::Random::Generator;
-*import      = \&Exporter::import;
 
-@EXPORT_OK   = qw( makerandom makerandom_itv makerandom_octet );
-$VERSION     = 1.24;
+$VERSION     = 1.25;
 
 
 sub _pickprovider { 
