@@ -1,0 +1,8 @@
+use ExtUtils::MakeMaker;
+# See lib/ExtUtils/MakeMaker.pm for details of how to influence
+# the contents of the Makefile that is written.
+WriteMakefile(
+    'NAME'	=> 'Crypt::Random',
+    'VERSION_FROM' => 'Crypt/Random.pm',
+    'EXE_FILES'    => [ 'bin/makerandom' ],
+);

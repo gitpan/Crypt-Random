@@ -1,0 +1,46 @@
+Revision history for Perl extension Crypt::Random.
+
+RCS file: RCS/Random.pm,v
+Working file: Random.pm
+head: 0.17
+branch:
+locks: strict
+	root: 0.17
+access list:
+symbolic names:
+keyword substitution: kv
+total revisions: 8;	selected revisions: 8
+description:
+----------------------------
+revision 0.17	locked by: root;
+date: 1999/04/09 19:02:15;  author: root;  state: Exp;  lines: +19 -5
+*** empty log message ***
+----------------------------
+revision 0.16
+date: 1999/04/09 18:40:15;  author: root;  state: Exp;  lines: +60 -11
+more docs.
+----------------------------
+revision 0.15
+date: 1999/04/09 17:43:16;  author: root;  state: Exp;  lines: +17 -10
+documentation.
+----------------------------
+revision 0.14
+date: 1999/03/09 17:21:32;  author: root;  state: Exp;  lines: +8 -6
+*** empty log message ***
+----------------------------
+revision 0.13
+date: 1999/03/08 22:30:46;  author: root;  state: Exp;  lines: +4 -2
+*** empty log message ***
+----------------------------
+revision 0.12
+date: 1999/03/08 22:29:27;  author: root;  state: Exp;  lines: +20 -13
+patch to makerandom_itv
+----------------------------
+revision 0.11
+date: 1999/03/08 20:02:40;  author: root;  state: Exp;  lines: +6 -6
+*** empty log message ***
+----------------------------
+revision 0.10
+date: 1999/03/08 19:32:15;  author: root;  state: Exp;
+*** empty log message ***
+=============================================================================
