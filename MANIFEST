@@ -1,6 +1,6 @@
 Changes
 MANIFEST
 Makefile.PL
-Crypt/Random.pm
+lib/Crypt/Random.pm
 test.pl
 bin/makerandom

@@ -1,4 +1,4 @@
-#!/usr/bin/perl -sI..
+#!/usr/bin/perl -sI../lib -Ilib/
 ##
 ## makerandom - interface to crypt::random
 ##

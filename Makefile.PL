@@ -3,6 +3,6 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 WriteMakefile(
     'NAME'	=> 'Crypt::Random',
-    'VERSION_FROM' => 'Crypt/Random.pm',
+    'VERSION_FROM' => 'lib/Crypt/Random.pm',
     'EXE_FILES'    => [ 'bin/makerandom' ],
 );

@@ -6,7 +6,7 @@
 ## This code is free software; you can redistribute it and/or modify
 ## it under the same terms as Perl itself.
 ##
-## $Id: Random.pm,v 0.17 1999/04/09 19:02:15 root Exp $
+## $Id: Random.pm,v 0.18 1999/10/13 22:57:38 root Exp root $
 
 package Crypt::Random; 
 require Exporter;
@@ -16,7 +16,7 @@ use Carp;
 *import      = \&Exporter::import;
 
 @EXPORT_OK   = qw( makerandom makerandom_itv );
-( $VERSION ) = '$Revision: 0.17 $' =~ /\s+(\d+\.\d+)\s+/; 
+( $VERSION ) = '$Revision: 0.18 $' =~ /\s+(\d+\.\d+)\s+/; 
 $DEV{ 0 }    = "/dev/urandom";   
 $DEV{ 1 }    = "/dev/random";   
 
@@ -152,6 +152,7 @@ Exclusive Upper limit.
 
 =back 
 
+=back
 
 =head1 BIBLIOGRAPHY 
 
@@ -162,6 +163,8 @@ the Linux kernel sources.
 and Scott Vanstone.
 
 =item 3 RFC 1321, The MD5 Message Digest Algorithm by Ronald Rivest. 
+
+=back
 
 =head1 AUTHOR
 
