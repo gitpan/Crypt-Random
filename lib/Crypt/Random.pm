@@ -19,7 +19,7 @@ use Crypt::Random::Generator;
 *import      = \&Exporter::import;
 
 @EXPORT_OK   = qw( makerandom makerandom_itv makerandom_octet );
-$VERSION     = 1.23;
+$VERSION     = 1.24;
 
 
 sub _pickprovider { 
@@ -91,7 +91,7 @@ sub makerandom_itv {
     my $random = makerandom %params, Size => $size;
 
     do { $random = makerandom %params, Size => $size } 
-    while ( $random >= int(PARI(2)**$size) - (int(PARI(2)**$size) % lift($b-$a)));
+    while ( $random >= (PARI(2)**$size) - ((PARI(2)**$size) % lift($b-$a)));
 
     $itv += $random; 
     my $r = PARI ( lift ( $itv ) + $a );
