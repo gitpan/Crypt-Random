@@ -1,0 +1,28 @@
+#!/usr/bin/perl -sw
+##
+##
+##
+## Copyright (c) 2001, Vipul Ved Prakash.  All rights reserved.
+## This code is free software; you can redistribute it and/or modify
+## it under the same terms as Perl itself.
+##
+## $Id$
+
+use lib "../lib";
+use Crypt::Random qw(makerandom_octet);
+
+print "1..1\n";
+
+my $skip;
+for (0..32) { 
+    $skip .= chr($_)
+}
+
+for (65..255) { 
+    $skip .= chr($_)
+}
+
+my $string = makerandom_octet ( Length => 200, Strength => 0, Skip => $skip );
+print length($string) == 200 ? "ok 1" : "not ok 1"; print "\n";
+
+

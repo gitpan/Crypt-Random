@@ -1,11 +1,11 @@
 Changes
 MANIFEST
 README
-INSTALL
 Makefile.PL
 lib/Crypt/Random.pm
 bin/makerandom
 t/makerandom_itv.t
 t/pari_misfeature.t
 t/random.t
+t/octet_string.t
 

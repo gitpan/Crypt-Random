@@ -6,7 +6,7 @@
 ## This code is free software; you can redistribute it and/or modify
 ## it under the same terms as Perl itself.
 ##
-## $Id: Random.pm,v 0.33 2001/02/18 20:56:07 vipul Exp vipul $
+## $Id: Random.pm,v 0.34 2001/04/17 13:46:58 vipul Exp vipul $
 
 package Crypt::Random; 
 require Exporter;
@@ -16,8 +16,8 @@ use Carp;
 use Data::Dumper;
 *import      = \&Exporter::import;
 
-@EXPORT_OK   = qw( makerandom makerandom_itv );
-( $VERSION ) = '$Revision: 0.33 $' =~ /\s+(\d+\.\d+)\s+/; 
+@EXPORT_OK   = qw( makerandom makerandom_itv makerandom_octet );
+( $VERSION ) = '$Revision: 0.34 $' =~ /\s+(\d+\.\d+)\s+/; 
 $DEV{ 0 }    = "/dev/urandom";   
 $DEV{ 1 }    = "/dev/random";   
 
@@ -78,6 +78,39 @@ sub makerandom_itv {
 
 }
 
+
+sub makerandom_octet  {
+
+	my ( %params ) = @_; 
+
+    my $length   = $params{Length};
+    my $skip     = $params{Skip} || "";
+    my $strength = $params{ Strength };
+    my $dev      = $params{ Device }; 
+
+    $params{Verbosity} = 0 unless $params{Verbosity};
+	$dev = $DEV{ 0 } unless $strength || $dev; 
+	$dev = $DEV{ 1 }     if $strength && !($dev); 
+
+    my $random = "";
+    my $read = 0;
+    my $rt; 
+
+	open  RANDOM, $dev || die $!;
+    while ($read < $length) { 
+        read  RANDOM, $rt, 1;
+        unless ($skip =~ /\Q$rt\E/) { 
+            print "." if $params{Verbosity};
+            $random .= $rt;
+            $read++;
+        }
+    }
+   
+    return "$random";
+
+}
+
+
 'True Value';
 
 =head1 NAME
@@ -86,8 +119,8 @@ Crypt::Random - Cryptographically Secure, True Random Number Generator.
 
 =head1 VERSION
 
- $Revision: 0.33 $
- $Date: 2001/02/18 20:56:07 $
+ $Revision: 0.34 $
+ $Date: 2001/04/17 13:46:58 $
 
 =head1 SYNOPSIS
 
@@ -156,6 +189,25 @@ Inclusive Lower limit.
 Exclusive Upper limit. 
 
 =back 
+
+=item B<makerandom_octet()>
+
+Generates a random octet string of specified length. In addition to
+B<Strength>, B<Device> and B<Verbosity>, following arguments can be
+specified.
+
+=over 4
+
+=item B<Length>
+
+Length of the desired octet string. 
+
+=item B<Skip>
+
+An octet string consisting of characters to be skipped while reading from
+the random device.
+
+=back
 
 =back
 

@@ -6,5 +6,5 @@ WriteMakefile(
     'AUTHOR'       => 'Vipul Ved Prakash <mail@vipul.net>',
     'VERSION_FROM' => 'lib/Crypt/Random.pm',
     'EXE_FILES'    => [ 'bin/makerandom' ],
-    'PREREQ_PM'    => { 'Math::Pari' => '2.001802' } 
+    'PREREQ_PM'    => { 'Math::Pari' => '2.001804' } 
 );
