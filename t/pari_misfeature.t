@@ -4,7 +4,7 @@
 ## This code is free software; you can redistribute it and/or modify
 ## it under the same terms as Perl itself.
 ##
-## $Id$
+## $Id: pari_misfeature.t,v 1.1.1.1 2001/06/21 15:34:49 vipul Exp $
 
 use lib 'lib';
 use lib '../lib';

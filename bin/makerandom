@@ -6,7 +6,7 @@
 ## This code is free software; you can redistribute it and/or modify
 ## it under the same terms as Perl itself.
 ##
-## $Id: makerandom,v 0.11 1999/03/09 17:26:09 root Exp root $
+## $Id: makerandom,v 1.1.1.1 2001/06/21 15:34:49 vipul Exp $
 
 use Crypt::Random qw( makerandom makerandom_itv );
 

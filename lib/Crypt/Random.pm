@@ -6,7 +6,7 @@
 ## This code is free software; you can redistribute it and/or modify
 ## it under the same terms as Perl itself.
 ##
-## $Id: Random.pm,v 0.34 2001/04/17 13:46:58 vipul Exp vipul $
+## $Id: Random.pm,v 1.7 2001/06/22 04:24:29 vipul Exp $
 
 package Crypt::Random; 
 require Exporter;
@@ -14,63 +14,61 @@ use vars qw($VERSION @EXPORT_OK);
 use Math::Pari qw(PARI floor Mod pari2pv pari2num lift); 
 use Carp; 
 use Data::Dumper;
+use Class::Loader;
+use Crypt::Random::Generator;
 *import      = \&Exporter::import;
 
 @EXPORT_OK   = qw( makerandom makerandom_itv makerandom_octet );
-( $VERSION ) = '$Revision: 0.34 $' =~ /\s+(\d+\.\d+)\s+/; 
-$DEV{ 0 }    = "/dev/urandom";   
-$DEV{ 1 }    = "/dev/random";   
+($VERSION) = do { my @r = (q$Revision: 1.7 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+
+
+sub _pickprovider { 
+
+    my (%params) = @_;
+
+    return $params{Provider} if $params{Provider};
+    $strength = 0 unless $params{Strength};
+    my $gen = new Crypt::Random::Generator Strength => $strength;
+    return $gen->{Provider};
+
+}
 
 sub makerandom { 
 
-	my ( %params ) = @_;
+    my ( %params ) = @_;
 
-    my $size     = $params{ Size }; 
-    my $strength = $params{ Strength };
-    my $dev      = $params{ Device }; 
-    my $down     = $size - 1;
     $params{Verbosity} = 0 unless $params{Verbosity};
 
-	$dev = $DEV{ 0 } unless $strength || $dev; 
-	$dev = $DEV{ 1 }     if $strength && !($dev); 
+    local $| = 1;
 
-	croak "$dev doesn't exist.  aborting." unless -e $dev;
+    my $provider = _pickprovider(%params);
+    my $loader = new Class::Loader;
+    my $po = $loader->_load ( Module => "Crypt::Random::Provider::$provider", 
+                              Args => [ %params ] ) or die $!;
+    my $r = $po->get_data( %params );
 
-    $| = 1;
-    my $r = $rt = "";
-    my $bytes = int ( pari2num($size) / 8 ) + 1;
-	open  RANDOM, $dev;
-    for ( 0 .. $bytes ) {
-        read  RANDOM, $rt, 1;
-        print "." if $params{Verbosity} == 1 && (!($_ % 2));
-        $r .= $rt;
-    }
-    print "\n" if $params{Verbosity} == 1;
-    close RANDOM;
-
+    my $size     = $params{Size};
+    my $down     = $size - 1;
     $y = unpack "H*",     pack "B*", '0' x ( $size%8 ? 8-$size % 8 : 0 ). '1'.
          unpack "b$down", $r;
 
-	return Math::Pari::_hex_cvt ( "0x$y" );
+    return Math::Pari::_hex_cvt ( "0x$y" );
 
 }
 
 
 sub makerandom_itv { 
 
-	my ( %params ) = @_; 
+    my ( %params ) = @_; 
 
-    my $a  = $params{ Lower }; $a = PARI ( $a ); 
+    my $a  = $params{ Lower } || 0; $a = PARI ( $a ); 
     my $b  = $params{ Upper }; $b = PARI ( $b );
 
-	my $itv    = Mod ( 0, $b - $a );
-	my $size   = length ( $itv ) * 5;
-	my $random = makerandom Size      => $size, 
-                            Strength  => $params{ Strength }, 
-                            Device    => $params{ Device }, 
-                            Verbosity => $params{ Verbosity };
+    my $itv    = Mod ( 0, $b - $a );
+    my $size   = length ( $itv ) * 5;
+    my $random = makerandom %params, Size => $size;
 
-	$itv += $random; 
+    $itv += $random; 
     my $r = PARI ( lift ( $itv ) + $a );
 
     undef $itv; undef $a; undef $b; 
@@ -81,32 +79,16 @@ sub makerandom_itv {
 
 sub makerandom_octet  {
 
-	my ( %params ) = @_; 
-
-    my $length   = $params{Length};
-    my $skip     = $params{Skip} || "";
-    my $strength = $params{ Strength };
-    my $dev      = $params{ Device }; 
+    my ( %params ) = @_; 
 
     $params{Verbosity} = 0 unless $params{Verbosity};
-	$dev = $DEV{ 0 } unless $strength || $dev; 
-	$dev = $DEV{ 1 }     if $strength && !($dev); 
 
-    my $random = "";
-    my $read = 0;
-    my $rt; 
+    my $provider = _pickprovider(%params); 
+    my $loader = new Class::Loader;
+    my $po = $loader->_load ( Module => "Crypt::Random::Provider::$provider", 
+                              Args => [ %params ] );
+    return $po->get_data( %params );
 
-	open  RANDOM, $dev || die $!;
-    while ($read < $length) { 
-        read  RANDOM, $rt, 1;
-        unless ($skip =~ /\Q$rt\E/) { 
-            print "." if $params{Verbosity};
-            $random .= $rt;
-            $read++;
-        }
-    }
-   
-    return "$random";
 
 }
 
@@ -119,8 +101,8 @@ Crypt::Random - Cryptographically Secure, True Random Number Generator.
 
 =head1 VERSION
 
- $Revision: 0.34 $
- $Date: 2001/04/17 13:46:58 $
+ $Revision: 1.7 $
+ $Date: 2001/06/22 04:24:29 $
 
 =head1 SYNOPSIS
 
