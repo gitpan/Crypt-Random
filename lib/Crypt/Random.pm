@@ -19,7 +19,7 @@ use Crypt::Random::Generator;
 *import      = \&Exporter::import;
 
 @EXPORT_OK   = qw( makerandom makerandom_itv makerandom_octet );
-($VERSION) = do { my @r = (q$Revision: 1.20 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+($VERSION) = do { my @r = (q$Revision: 1.21 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
 
 sub _pickprovider { 
@@ -44,7 +44,9 @@ sub makerandom {
     my $provider = _pickprovider(%params);
     my $loader = new Class::Loader;
     my $po = $loader->_load ( Module => "Crypt::Random::Provider::$provider", 
-                              Args => [ %params ] ) 
+                              Args => [ map { $_ => $params{$_} }
+                                qw(Strength Provider) ] )
+
         or die "Unable to load module Crypt::Random::Provider::$provider - $!";
     my $r = $po->get_data( %params );
 

@@ -19,3 +19,4 @@ t/random.t
 t/octet_string.t
 t/generator.t
 
+META.yml                                 Module meta-data (added by MakeMaker)

@@ -4,6 +4,11 @@
 
 --------------------------------------------------------------------------
 
+1.21                                                          May 24, 2004
+
+  * Patch by dorian to workaround Math::Pari's serialization problem.
+    
+
 1.20                                                        April 21, 2004
 
  * Added a Uniform option to makerandom() and makerandom_itv() that 
@@ -13,28 +18,28 @@
 
    Here's his explaination:
 
-   If Size is increased to 4 bits, then of 16 values, there are 5 ways to
-   get a 1, 5 ways to get a 2, but 6 ways to get a 0. Thus 0 will occur
-   6/5 = 1.2 times more often than 1 or 2. Increasing size to 6 bits,
-   there are (2^6-1)/3 ways to get a 1 or 2, but there are (2^6+2)/3
-   ways to get a 0, and a 0 will occur more often by a factor of
-   (2^6+2)/(2^6-1).
+       If Size is increased to 4 bits, then of 16 values, there are 5 ways
+       to get a 1, 5 ways to get a 2, but 6 ways to get a 0. Thus 0 will
+       occur 6/5 = 1.2 times more often than 1 or 2. Increasing size to 6
+       bits, there are (2^6-1)/3 ways to get a 1 or 2, but there are
+       (2^6+2)/3 ways to get a 0, and a 0 will occur more often by a
+       factor of (2^6+2)/(2^6-1).
 
-   If Size is then bumped up to 40, as makerandom_itv does, then 0 will
-   still happen more often than 1 or 2, but now it happens only
-   (2^40+2)/(2^40-1) times more often, or about 1 + 2.7*10^-12 times more
-   often. This difference is too small to observe in a practical
-   experiment, but it is still a deviation from uniformity.
+       If Size is then bumped up to 40, as makerandom_itv does, then 0
+       will still happen more often than 1 or 2, but now it happens only
+       (2^40+2)/(2^40-1) times more often, or about 1 + 2.7*10^-12 times
+       more often. This difference is too small to observe in a practical
+       experiment, but it is still a deviation from uniformity.
 
-   What's going on is that when ($b-$a) does not evenly divide 2^N, the
-   outcome ($b-1) is less likely to happen than the outcome $a. The case
-   that Size=2, $a=0 and $b=3 illustrates this most clearly.
+       What's going on is that when ($b-$a) does not evenly divide 2^N,
+       the outcome ($b-1) is less likely to happen than the outcome $a.
+       The case that Size=2, $a=0 and $b=3 illustrates this most clearly.
 
-   This is easy to correct: we simply want to make the largest value of
-   makerandom() to be evenly divisible by ($b-$a), by ignoring any result
-   which is >= (2^Size - (2^Size % ($b-$a))). The second attached file
-   includes the fix, which you will see produces uniform probabilities if
-   you perform the test given above.
+       This is easy to correct: we simply want to make the largest value
+       of makerandom() to be evenly divisible by ($b-$a), by ignoring any
+       result which is >= (2^Size - (2^Size % ($b-$a))). The second
+       attached file includes the fix, which you will see produces uniform
+       probabilities if you perform the test given above.
 
 
 1.13                                                        March 11, 2003
