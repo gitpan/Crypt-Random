@@ -1,8 +1,12 @@
 
                        CHANGELOG for Crypt::Random
-           $Id: Changes,v 1.4 2001/06/22 18:16:26 vipul Exp $
+           $Id: Changes,v 1.5 2001/07/09 17:42:33 vipul Exp $
 
 --------------------------------------------------------------------------
+
+1.09                                                         July 09, 2001
+
+  * Fix in _pickprovider(), thanks to Benjamin Trott for the patch.
 
 1.08                                                         June 22, 2001 
 
