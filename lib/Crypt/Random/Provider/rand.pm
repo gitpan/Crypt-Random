@@ -1,6 +1,6 @@
 #!/usr/bin/perl -sw
 ##
-##
+## Crypt::Random::Provider::rand
 ##
 ## Copyright (c) 2001, Vipul Ved Prakash.  All rights reserved.
 ## This code is free software; you can redistribute it and/or modify

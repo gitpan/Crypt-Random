@@ -19,7 +19,7 @@ use Crypt::Random::Generator;
 *import      = \&Exporter::import;
 
 @EXPORT_OK   = qw( makerandom makerandom_itv makerandom_octet );
-($VERSION) = do { my @r = (q$Revision: 1.13 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+($VERSION) = do { my @r = (q$Revision: 1.20 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
 
 sub _pickprovider { 
@@ -38,7 +38,7 @@ sub makerandom {
     my ( %params ) = @_;
 
     $params{Verbosity} = 0 unless $params{Verbosity};
-
+    my $uniform = $params{Uniform} || 0;
     local $| = 1;
 
     my $provider = _pickprovider(%params);
@@ -50,8 +50,27 @@ sub makerandom {
 
     my $size     = $params{Size};
     my $down     = $size - 1;
-    $y = unpack "H*",     pack "B*", '0' x ( $size%8 ? 8-$size % 8 : 0 ). '1'.
-         unpack "b$down", $r;
+
+    unless ($uniform) { 
+
+        # We always set the high bit of the random number if 
+        # we want the result to occupy exactly $size bits.
+
+        $y = unpack "H*",     pack "B*", '0' x ( $size%8 ? 8-$size % 8 : 0 ). '1'.
+             unpack "b$down", $r;
+
+    } else { 
+
+        # If $uniform is set $size of 2 could return 00 
+        # and 01 in addition to 10 and 11. 00 and 01 can 
+        # be represented in less than 2 bits, but 
+        # the result of this generation is uniformally 
+        # distributed.
+
+        $y = unpack "H*",     pack "B*", '0' x ( $size%8 ? 8-$size % 8 : 0 ).
+             unpack "b$size", $r;
+
+    }
 
     return Math::Pari::_hex_cvt ( "0x$y" );
 
@@ -68,6 +87,9 @@ sub makerandom_itv {
     my $itv    = Mod ( 0, $b - $a );
     my $size   = length ( $itv ) * 5;
     my $random = makerandom %params, Size => $size;
+
+    do { $random = makerandom %params, Size => $size } 
+    while ( $random >= int(PARI(2)**$size) - (int(PARI(2)**$size) % lift($b-$a)));
 
     $itv += $random; 
     my $r = PARI ( lift ( $itv ) + $a );
@@ -164,6 +186,13 @@ for requesting random bits while 0 implies /dev/urandom.
 =item B<Device> 
 
 Alternate device to request random bits from. 
+
+=item B<Uniform> 0 || 1
+
+Value of 0 (default) implies that the high bit of the generated random
+number is always set, ensuring the bitsize of the generated random will be
+exactly Size bits. For uniformally distributed random numbers, Uniform
+should be set to 1.
 
 =back 
 

@@ -15,7 +15,7 @@ my $i = 1;
 
 for my $limit ( '1000', '10000', '100000', '1000000000', '1000000000000' ) { 
     for ( 1 .. $sample ) { 
-        print makerandom_itv ( Lower=>0, Upper=>$limit ) . "\n";
+        print makerandom_itv ( Lower=>0, Upper=>$limit, Uniform => 1 ) . "\n";
     }
     print "ok ". $i++."\n";
 }
