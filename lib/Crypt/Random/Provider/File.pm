@@ -24,7 +24,8 @@ sub get_data {
     $self = {} unless ref $self;
 
     my $size = $params{Size}; 
-    my $skip = $params{Skip} || $$self{Skip};
+    my $skip = $params{Skip} || $$self{Skip} || '';
+    my $q_skip = quotemeta($skip);
 
     if ($size && ref $size eq "Math::Pari") { 
         $size = pari2num($size);
@@ -36,14 +37,14 @@ sub get_data {
 
     my($r, $read, $rt) = ('', 0);
     while ($read < $bytes) {
-        my $howmany = sysread  RANDOM, $rt, 1;
+        my $howmany = sysread  RANDOM, $rt, $bytes - $read;
         next unless $howmany;
         if ($howmany == -1) { 
             croak "Error while reading from $$self{Source}. $!"
         }
-        unless ($skip && $skip =~ /\Q$rt\E/) {
-            $r .= $rt; $read++;
-        }
+        $rt =~ s/[$q_skip]//g if $skip;
+        $r .= $rt; 
+        $read = length $r;
     }
 
     $r;

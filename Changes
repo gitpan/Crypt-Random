@@ -4,6 +4,12 @@
 
 --------------------------------------------------------------------------
 
+1.23                                                         June 02, 2004
+
+  * Another patch by Micheal Schwern to make the File provider faster.
+    Instead of sysread'ing, a byte at a time, we read the required number
+    of bytes in one go.
+
 1.22                                                         June 01, 2004
 
   * Patch by Michael Schwern to replace open/read with sysopen()/sysread()

@@ -11,18 +11,17 @@
 use lib "../lib";
 use Crypt::Random qw(makerandom_octet);
 
-print "1..1\n";
+print "1..2\n";
 
 my $skip;
-for (0..32) { 
-    $skip .= chr($_)
-}
 
-for (65..255) { 
-    $skip .= chr($_)
-}
-
+for (0..32, 65..255) { 
+     $skip .= chr($_)
+ }
+ 
 my $string = makerandom_octet ( Length => 200, Strength => 0, Skip => $skip );
 print length($string) == 200 ? "ok 1" : "not ok 1"; print "\n";
 
-
+my $q_skip = quotemeta $skip;
+print $string !~ qr/[$q_skip]/ ? "ok 2" : "not ok 2"; print "\n";
+ 
