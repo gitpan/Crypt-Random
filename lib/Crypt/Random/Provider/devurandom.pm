@@ -6,9 +6,10 @@
 ## This code is free software; you can redistribute it and/or modify
 ## it under the same terms as Perl itself.
 ##
-## $Id: devurandom.pm,v 1.1 2001/06/22 03:21:41 vipul Exp $
+## $Id: devurandom.pm,v 1.2 2001/06/22 18:16:29 vipul Exp $
 
 package Crypt::Random::Provider::devurandom; 
+use strict;
 use lib qw(/home/vipul/PERL/crypto/random/lib);
 use Crypt::Random::Provider::File;
 use vars qw(@ISA);
@@ -16,4 +17,5 @@ use vars qw(@ISA);
 
 sub _defaultsource { return "/dev/urandom" } 
 
+1;
 

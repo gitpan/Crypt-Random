@@ -1,4 +1,6 @@
 package Crypt::Random::Provider::File; 
+use strict;
+use Math::Pari qw(pari2num);
 
 
 sub _defaultsource { 

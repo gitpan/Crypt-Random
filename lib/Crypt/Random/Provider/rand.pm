@@ -6,9 +6,10 @@
 ## This code is free software; you can redistribute it and/or modify
 ## it under the same terms as Perl itself.
 ##
-## $Id: rand.pm,v 1.1 2001/06/22 03:21:41 vipul Exp $
+## $Id: rand.pm,v 1.2 2001/06/22 18:16:29 vipul Exp $
 
 package Crypt::Random::Provider::rand; 
+use strict;
 use Math::Pari qw(pari2num);
 
 sub new { 
@@ -23,6 +24,7 @@ sub new {
 sub get_data { 
 
     my ($self, %params) = @_;
+    $self = {} unless ref $self;
 
     my $size = $params{Size}; 
     my $skip = $params{Skip} || $$self{Skip};
@@ -32,7 +34,7 @@ sub get_data {
     }
 
     my $bytes = $params{Length} || (int($size / 8) + 1);
-    my $source = $$self{Source};
+    my $source = $$self{Source} || sub { rand($_[0]) };
     
     my($r, $read, $rt) = ('', 0);
     while ($read < $bytes) {
