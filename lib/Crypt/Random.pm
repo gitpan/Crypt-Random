@@ -6,17 +6,17 @@
 ## This code is free software; you can redistribute it and/or modify
 ## it under the same terms as Perl itself.
 ##
-## $Id: Random.pm,v 0.18 1999/10/13 22:57:38 root Exp root $
+## $Id: Random.pm,v 0.23 2000/09/18 13:22:09 root Exp root $
 
 package Crypt::Random; 
 require Exporter;
 use vars qw($VERSION @EXPORT_OK); 
-use Math::Pari qw( PARI floor Mod pari2pv); 
+use Math::Pari qw( PARI floor Mod pari2pv round lift ); 
 use Carp; 
 *import      = \&Exporter::import;
 
 @EXPORT_OK   = qw( makerandom makerandom_itv );
-( $VERSION ) = '$Revision: 0.18 $' =~ /\s+(\d+\.\d+)\s+/; 
+( $VERSION ) = '$Revision: 0.23 $' =~ /\s+(\d+\.\d+)\s+/; 
 $DEV{ 0 }    = "/dev/urandom";   
 $DEV{ 1 }    = "/dev/random";   
 
@@ -41,7 +41,7 @@ sub makerandom {
     $y = unpack "H*",     pack "B*", '0' x ( $size%8 ? 8-$size % 8 : 0 ). '1'.
          unpack "b$down", pack "a*", $r;
 
-	return Math::Pari::_hex_cvt ( "0x$y" );
+	return round ( Math::Pari::_hex_cvt ( "0x$y" ), 'e' );
 
 }
 
@@ -50,29 +50,18 @@ sub makerandom_itv {
 
 	my ( %params ) = @_; 
 
-    my $a  = $params{ Lower }; $a = PARI ( $a ); 
-    my $b  = $params{ Upper }; $b = PARI ( $b );
-
-	my $itv    = Mod ( 0, $b - $a );
-	my $size   = length ( $itv ) * 5;
+    my $a = $params{ Lower }; $a = PARI ( $a ); 
+    my $b = $params{ Upper }; $b = PARI ( $b );
+    my $c = PARI(); $c = $b - $a;
+	my $itv = Mod ( 0, $c ); my $size = length ( $itv ) * 5;
 	my $random = makerandom Size     => $size, 
                             Strength => $params{ Strength }, 
                             Device   => $params{ Device };
 
-	$itv += $random; 
-    my $r = PARI ( MOD2int ( $itv ) + $a );
-
+	$itv += $random;
+    my $r = PARI ( lift ( $itv ) + $a );
     undef $itv; undef $a; undef $b; 
     return "$r";
-
-}
-
-sub MOD2int { 
-    
-    my $m = pari2pv ( shift );
-    $m =~ /Mod\((\d+)/;
-    $m = $1;
-    return PARI "$m";
 
 }
 
@@ -90,23 +79,23 @@ Crypt::Random - Cryptographically Secure, True Random Number Generator.
 =head1 DESCRIPTION
 
 Crypt::Random is an interface module to the /dev/random device found on most
-modern Unix systems. The /dev/random driver gathers environmental noise from
-various non-deterministic sources including, but not limited to,
+modern Unix systems.  The /dev/random driver gathers environmental noise
+from various non-deterministic sources including, but not limited to,
 inter-keyboard timings and inter-interrupt timings that occur within the
-operating system environment. The noise data is sampled and combined with a
-CRC-like mixing function into a continuously updating "entropy-pool". Random
-bit strings are obtained by taking a MD5 hash of the contents of this pool.
-The one-way hash function distills the true random bits from pool data and
-hides the state of the pool from adversaries.
+operating system environment.  The noise data is sampled and combined with a
+CRC-like mixing function into a continuously updating "entropy-pool".
+Random bit strings are obtained by taking a MD5 hash of the contents of this
+pool.  The one-way hash function distills the true random bits from pool
+data and hides the state of the pool from adversaries.
 
 The /dev/random routine maintains an estimate of true randomness in the pool
-and decreases it every time random strings are requested for use. When the
-estimate goes down to zero, the routine locks and waits for the occurrence of
-non-deterministic events to refresh the pool.  
+and decreases it every time random strings are requested for use.  When the
+estimate goes down to zero, the routine locks and waits for the occurrence
+of non-deterministic events to refresh the pool.
 
 The /dev/random kernel module also provides another interface, /dev/urandom,
 that does not wait for the entropy-pool to re-charge and returns as many
-bytes as requested. As a result /dev/urandom is considerably faster at
+bytes as requested.  As a result /dev/urandom is considerably faster at
 generation compared to /dev/random which is used only when very high quality
 randomness is desired.
 
@@ -152,7 +141,11 @@ Exclusive Upper limit.
 
 =back 
 
-=back
+=head1 SYSTEMS WITHOUT /dev/random SUPPORT
+
+For systems that don't support /dev/u?random devices in kernel, applications
+are available that provide these devices in user-space.  Check with your
+vendor.
 
 =head1 BIBLIOGRAPHY 
 
@@ -163,8 +156,6 @@ the Linux kernel sources.
 and Scott Vanstone.
 
 =item 3 RFC 1321, The MD5 Message Digest Algorithm by Ronald Rivest. 
-
-=back
 
 =head1 AUTHOR
 
