@@ -6,7 +6,7 @@
 ## This code is free software; you can redistribute it and/or modify
 ## it under the same terms as Perl itself.
 ##
-## $Id: Random.pm,v 0.32 2001/02/14 00:30:15 vipul Exp vipul $
+## $Id: Random.pm,v 0.33 2001/02/18 20:56:07 vipul Exp vipul $
 
 package Crypt::Random; 
 require Exporter;
@@ -17,7 +17,7 @@ use Data::Dumper;
 *import      = \&Exporter::import;
 
 @EXPORT_OK   = qw( makerandom makerandom_itv );
-( $VERSION ) = '$Revision: 0.32 $' =~ /\s+(\d+\.\d+)\s+/; 
+( $VERSION ) = '$Revision: 0.33 $' =~ /\s+(\d+\.\d+)\s+/; 
 $DEV{ 0 }    = "/dev/urandom";   
 $DEV{ 1 }    = "/dev/random";   
 
@@ -86,8 +86,8 @@ Crypt::Random - Cryptographically Secure, True Random Number Generator.
 
 =head1 VERSION
 
- $Revision: 0.32 $
- $Date: 2001/02/14 00:30:15 $
+ $Revision: 0.33 $
+ $Date: 2001/02/18 20:56:07 $
 
 =head1 SYNOPSIS
 

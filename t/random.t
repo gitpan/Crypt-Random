@@ -12,7 +12,7 @@ use lib 'lib';
 use lib '../lib';
 use Crypt::Random qw(makerandom makerandom_itv);
 
-print "1..2\n";
+print "1..1\n";
 
 $r = makerandom ( Size => 512, Verbosity => 1, Strength => 1 );
 $y = makerandom ( Size => 512, Verbosity => 1, Strength => 1 );
