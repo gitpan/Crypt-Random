@@ -4,6 +4,11 @@
 
 --------------------------------------------------------------------------
 
+1.13                                                        March 11, 2003
+
+  * Changed the die() message at provider contruction to include the 
+    name of the provider.
+
 1.12                                                         January, 2003
 
   * Updated documentation.
