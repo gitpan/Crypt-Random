@@ -2,7 +2,7 @@ package Crypt::Random::Provider::File;
 use strict;
 use Carp;
 use Math::Pari qw(pari2num);
-
+use Fcntl;
 
 sub _defaultsource { 
     return;
@@ -32,11 +32,11 @@ sub get_data {
 
     my $bytes = $params{Length} || (int($size / 8) + 1);
 
-    open RANDOM, $$self{Source};
+    sysopen RANDOM, $$self{Source}, O_RDONLY;
 
     my($r, $read, $rt) = ('', 0);
     while ($read < $bytes) {
-        my $howmany = read  RANDOM, $rt, 1;
+        my $howmany = sysread  RANDOM, $rt, 1;
         next unless $howmany;
         if ($howmany == -1) { 
             croak "Error while reading from $$self{Source}. $!"

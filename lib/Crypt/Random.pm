@@ -19,7 +19,7 @@ use Crypt::Random::Generator;
 *import      = \&Exporter::import;
 
 @EXPORT_OK   = qw( makerandom makerandom_itv makerandom_octet );
-($VERSION) = do { my @r = (q$Revision: 1.21 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+$VERSION     = 1.22;
 
 
 sub _pickprovider { 

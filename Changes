@@ -4,6 +4,12 @@
 
 --------------------------------------------------------------------------
 
+1.22                                                         June 01, 2004
+
+  * Patch by Michael Schwern to replace open/read with sysopen()/sysread()
+    so Crypt::Random doesn't waste entropy in /dev/u?random by reading a
+    buffer and throwing away unnecessary data.
+
 1.21                                                          May 24, 2004
 
   * Patch by dorian to workaround Math::Pari's serialization problem.
