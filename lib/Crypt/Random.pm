@@ -6,7 +6,7 @@
 ## This code is free software; you can redistribute it and/or modify
 ## it under the same terms as Perl itself.
 ##
-## $Id: Random.pm,v 1.10 2001/07/09 17:42:34 vipul Exp $
+## $Id: Random.pm,v 1.11 2001/07/12 15:59:47 vipul Exp $
 
 package Crypt::Random; 
 require Exporter;
@@ -19,7 +19,7 @@ use Crypt::Random::Generator;
 *import      = \&Exporter::import;
 
 @EXPORT_OK   = qw( makerandom makerandom_itv makerandom_octet );
-($VERSION) = do { my @r = (q$Revision: 1.10 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+($VERSION) = do { my @r = (q$Revision: 1.11 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
 
 sub _pickprovider { 
@@ -101,8 +101,8 @@ Crypt::Random - Cryptographically Secure, True Random Number Generator.
 
 =head1 VERSION
 
- $Revision: 1.10 $
- $Date: 2001/07/09 17:42:34 $
+ $Revision: 1.11 $
+ $Date: 2001/07/12 15:59:47 $
 
 =head1 SYNOPSIS
 
@@ -216,5 +216,4 @@ and Scott Vanstone.
 Vipul Ved Prakash, <mail@vipul.net>
 
 =cut
-
 

@@ -1,10 +1,15 @@
 
                        CHANGELOG for Crypt::Random
-           $Id: Changes,v 1.5 2001/07/09 17:42:33 vipul Exp $
+           $Id: Changes,v 1.6 2001/07/12 15:59:46 vipul Exp $
 
 --------------------------------------------------------------------------
 
-1.09                                                         July 09, 2001
+1.11                                                         July 12, 2001
+
+  * Applied a patch by Benjamin Trott to make egd detection more 
+    robust.
+
+1.10                                                         July 09, 2001
 
   * Fix in _pickprovider(), thanks to Benjamin Trott for the patch.
 
@@ -18,8 +23,8 @@
 
 1.05                                                         June 21, 2001
 
-  * Integrated and extended Benjamin Trott's patches to add
-    Provider architechture and egd support to Crypt::Random.
+  * Integrated and extended Benjamin Trott's patches to add provider
+    architechture and egd support to Crypt::Random.
 
   * Wrote Crypt::Random::Generator, and OO interface to Crypt::Random that
     automagically selects a suitable provider.
@@ -30,8 +35,8 @@
 
 0.34                                                        April 17, 2001 
 
-  * Wrote exportable makerandom_octet() that generates random 
-    octet strings.  See documentation for details.
+  * Wrote exportable makerandom_octet() that generates random octet
+    strings. See documentation for details.
 
   * Wrote a test for makerandom_octet() in t/octet_string.t
 

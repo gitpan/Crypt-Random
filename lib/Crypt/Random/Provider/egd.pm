@@ -6,7 +6,7 @@
 ## This code is free software; you can redistribute it and/or modify
 ## it under the same terms as Perl itself.
 ##
-## $Id: egd.pm,v 1.4 2001/06/22 14:05:02 vipul Exp $
+## $Id: egd.pm,v 1.5 2001/07/12 15:59:48 vipul Exp $
 
 package Crypt::Random::Provider::egd;
 use strict;
@@ -20,7 +20,7 @@ sub _defaultsource {
 
     my $source;
     for my $d (qw( /var/run/egd-pool /dev/egd-pool /etc/entropy )) {
-        if (-e $d) { $source = $d; last }
+        if (IO::Socket::UNIX->new(Peer => $d)) { $source = $d; last }
     }
     return $source;
 
