@@ -4,6 +4,12 @@
 
 --------------------------------------------------------------------------
 
+1.12                                                         January, 2003
+
+  * Updated documentation.
+
+  * Removed all /home/vipul/* entries from @INC.
+
 1.11                                                         July 12, 2001
 
   * Applied a patch by Benjamin Trott to make egd detection more 

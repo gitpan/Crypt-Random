@@ -19,7 +19,7 @@ use Crypt::Random::Generator;
 *import      = \&Exporter::import;
 
 @EXPORT_OK   = qw( makerandom makerandom_itv makerandom_octet );
-($VERSION) = do { my @r = (q$Revision: 1.11 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+($VERSION) = do { my @r = (q$Revision: 1.12 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
 
 sub _pickprovider { 
@@ -112,21 +112,33 @@ Crypt::Random - Cryptographically Secure, True Random Number Generator.
 =head1 DESCRIPTION
 
 Crypt::Random is an interface module to the /dev/random device found on
-most modern Unix systems. The /dev/random driver gathers environmental
-noise from various non-deterministic sources including inter-keyboard
-timings and inter-interrupt timings that occur within the operating system
-environment.
+most modern unix systems. It also interfaces with egd, a user space
+entropy gathering daemon, available for systems where /dev/random (or
+similar) devices are not available. When Math::Pari is installed,
+Crypt::Random can generate random integers of arbritary size of a given
+bitsize or in a specified interval.
+
+=head1 BLOCKING BEHAVIOUR
 
 The /dev/random driver maintains an estimate of true randomness in the
 pool and decreases it every time random strings are requested for use.
 When the estimate goes down to zero, the routine blocks and waits for the
 occurrence of non-deterministic events to refresh the pool.
 
-The /dev/random kernel module also provides another interface,
-/dev/urandom, that does not wait for the entropy-pool to recharge and
-returns as many bytes as requested. /dev/urandom is considerably faster at
-generation compared to /dev/random, which should be used only when very
-high quality randomness is desired.
+When the routine is blocked, Crypt::Random's read() will be blocked till
+desired amount of random bytes have been read off of the device. The
+/dev/random kernel module also provides another interface, /dev/urandom,
+that does not wait for the entropy-pool to recharge and returns as many
+bytes as requested. For applications that must not block (for a
+potentially long time) should use /dev/urandom. /dev/random should be
+reserved for instances where very high quality randomness is desired.
+
+=head1 HARDWARE RNG
+
+If there's a hardware random number generator available, for instance the
+Intel i8x0 random number generator, please use it instead of /dev/random!.
+It'll be high quality, a lot faster and it won't block! Usually your OS
+will provide access to the RNG as a device, eg (/dev/intel_rng).
 
 =head1 METHODS 
 

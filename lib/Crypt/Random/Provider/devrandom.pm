@@ -10,7 +10,7 @@
 
 package Crypt::Random::Provider::devrandom; 
 use strict;
-use lib qw(/home/vipul/PERL/crypto/random/lib);
+use lib qw(lib);
 use Crypt::Random::Provider::File;
 use vars qw(@ISA);
 @ISA = qw(Crypt::Random::Provider::File);
