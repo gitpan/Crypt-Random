@@ -1,0 +1,5 @@
+
+Crypt::Random needs Math::Pari 2.001802 or higher. As of this writing, the
+latest version of Math::Pari isn't available from CPAN. Fetch it from
+ftp://ftp.math.ohio-state.edu/pub/users/ilya/perl/modules/
+

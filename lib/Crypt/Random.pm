@@ -6,17 +6,18 @@
 ## This code is free software; you can redistribute it and/or modify
 ## it under the same terms as Perl itself.
 ##
-## $Id: Random.pm,v 0.23 2000/09/18 13:22:09 root Exp root $
+## $Id: Random.pm,v 0.32 2001/02/14 00:30:15 vipul Exp vipul $
 
 package Crypt::Random; 
 require Exporter;
 use vars qw($VERSION @EXPORT_OK); 
-use Math::Pari qw( PARI floor Mod pari2pv round lift ); 
+use Math::Pari qw(PARI floor Mod pari2pv pari2num lift); 
 use Carp; 
+use Data::Dumper;
 *import      = \&Exporter::import;
 
 @EXPORT_OK   = qw( makerandom makerandom_itv );
-( $VERSION ) = '$Revision: 0.23 $' =~ /\s+(\d+\.\d+)\s+/; 
+( $VERSION ) = '$Revision: 0.32 $' =~ /\s+(\d+\.\d+)\s+/; 
 $DEV{ 0 }    = "/dev/urandom";   
 $DEV{ 1 }    = "/dev/random";   
 
@@ -28,20 +29,29 @@ sub makerandom {
     my $strength = $params{ Strength };
     my $dev      = $params{ Device }; 
     my $down     = $size - 1;
+    $params{Verbosity} = 0 unless $params{Verbosity};
 
 	$dev = $DEV{ 0 } unless $strength || $dev; 
 	$dev = $DEV{ 1 }     if $strength && !($dev); 
 
 	croak "$dev doesn't exist.  aborting." unless -e $dev;
 
+    $| = 1;
+    my $r = $rt = "";
+    my $bytes = int ( pari2num($size) / 8 ) + 1;
 	open  RANDOM, $dev;
-    read  RANDOM, $r, int ( $size / 8 ) + 1;
+    for ( 0 .. $bytes ) {
+        read  RANDOM, $rt, 1;
+        print "." if $params{Verbosity} == 1 && (!($_ % 2));
+        $r .= $rt;
+    }
+    print "\n" if $params{Verbosity} == 1;
     close RANDOM;
 
     $y = unpack "H*",     pack "B*", '0' x ( $size%8 ? 8-$size % 8 : 0 ). '1'.
-         unpack "b$down", pack "a*", $r;
+         unpack "b$down", $r;
 
-	return round ( Math::Pari::_hex_cvt ( "0x$y" ), 'e' );
+	return Math::Pari::_hex_cvt ( "0x$y" );
 
 }
 
@@ -50,16 +60,19 @@ sub makerandom_itv {
 
 	my ( %params ) = @_; 
 
-    my $a = $params{ Lower }; $a = PARI ( $a ); 
-    my $b = $params{ Upper }; $b = PARI ( $b );
-    my $c = PARI(); $c = $b - $a;
-	my $itv = Mod ( 0, $c ); my $size = length ( $itv ) * 5;
-	my $random = makerandom Size     => $size, 
-                            Strength => $params{ Strength }, 
-                            Device   => $params{ Device };
+    my $a  = $params{ Lower }; $a = PARI ( $a ); 
+    my $b  = $params{ Upper }; $b = PARI ( $b );
 
-	$itv += $random;
+	my $itv    = Mod ( 0, $b - $a );
+	my $size   = length ( $itv ) * 5;
+	my $random = makerandom Size      => $size, 
+                            Strength  => $params{ Strength }, 
+                            Device    => $params{ Device }, 
+                            Verbosity => $params{ Verbosity };
+
+	$itv += $random; 
     my $r = PARI ( lift ( $itv ) + $a );
+
     undef $itv; undef $a; undef $b; 
     return "$r";
 
@@ -71,6 +84,11 @@ sub makerandom_itv {
 
 Crypt::Random - Cryptographically Secure, True Random Number Generator. 
 
+=head1 VERSION
+
+ $Revision: 0.32 $
+ $Date: 2001/02/14 00:30:15 $
+
 =head1 SYNOPSIS
 
  use Crypt::Random qw( makerandom ); 
@@ -78,28 +96,26 @@ Crypt::Random - Cryptographically Secure, True Random Number Generator.
 
 =head1 DESCRIPTION
 
-Crypt::Random is an interface module to the /dev/random device found on most
-modern Unix systems.  The /dev/random driver gathers environmental noise
-from various non-deterministic sources including, but not limited to,
-inter-keyboard timings and inter-interrupt timings that occur within the
-operating system environment.  The noise data is sampled and combined with a
-CRC-like mixing function into a continuously updating "entropy-pool".
-Random bit strings are obtained by taking a MD5 hash of the contents of this
-pool.  The one-way hash function distills the true random bits from pool
-data and hides the state of the pool from adversaries.
+Crypt::Random is an interface module to the /dev/random device found on
+most modern Unix systems. The /dev/random driver gathers environmental
+noise from various non-deterministic sources including inter-keyboard
+timings and inter-interrupt timings that occur within the operating system
+environment.
 
-The /dev/random routine maintains an estimate of true randomness in the pool
-and decreases it every time random strings are requested for use.  When the
-estimate goes down to zero, the routine locks and waits for the occurrence
-of non-deterministic events to refresh the pool.
+The /dev/random driver maintains an estimate of true randomness in the
+pool and decreases it every time random strings are requested for use.
+When the estimate goes down to zero, the routine blocks and waits for the
+occurrence of non-deterministic events to refresh the pool.
 
-The /dev/random kernel module also provides another interface, /dev/urandom,
-that does not wait for the entropy-pool to re-charge and returns as many
-bytes as requested.  As a result /dev/urandom is considerably faster at
-generation compared to /dev/random which is used only when very high quality
-randomness is desired.
+The /dev/random kernel module also provides another interface,
+/dev/urandom, that does not wait for the entropy-pool to recharge and
+returns as many bytes as requested. /dev/urandom is considerably faster at
+generation compared to /dev/random, which should be used only when very
+high quality randomness is desired.
 
 =head1 METHODS 
+
+=over 4
 
 =item B<makerandom()>
 
@@ -141,13 +157,17 @@ Exclusive Upper limit.
 
 =back 
 
-=head1 SYSTEMS WITHOUT /dev/random SUPPORT
+=back
 
-For systems that don't support /dev/u?random devices in kernel, applications
-are available that provide these devices in user-space.  Check with your
-vendor.
+=head1 DEPENDENCIES
+
+Crypt::Random needs Math::Pari 2.001802 or higher. As of this writing, the
+latest version of Math::Pari isn't available from CPAN. Fetch it from
+ftp://ftp.math.ohio-state.edu/pub/users/ilya/perl/modules/
 
 =head1 BIBLIOGRAPHY 
+
+=over 4
 
 =item 1 random.c by Theodore Ts'o.  Found in drivers/char directory of 
 the Linux kernel sources.
@@ -155,11 +175,11 @@ the Linux kernel sources.
 =item 2 Handbook of Applied Cryptography by Menezes, Paul C. van Oorschot
 and Scott Vanstone.
 
-=item 3 RFC 1321, The MD5 Message Digest Algorithm by Ronald Rivest. 
+=back
 
 =head1 AUTHOR
 
-Vipul Ved Prakash, mail@vipul.net
+Vipul Ved Prakash, <mail@vipul.net>
 
 =cut
 
